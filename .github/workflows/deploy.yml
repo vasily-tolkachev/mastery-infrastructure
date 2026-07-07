@@ -26,26 +26,27 @@ jobs:
           echo "=== Secrets ==="
           echo "DEPLOY_HOST set: ${{ secrets.DEPLOY_HOST != '' }}"
           echo "DEPLOY_USER set: ${{ secrets.DEPLOY_USER != '' }}"
-          echo "DEPLOY_USER set: ${{ secrets.DEPLOY_USER }}"
+          echo "DEPLOY_USER set: ${{ secrets.DEPLOY_USER != '' }}"
           echo "DEPLOY_SSH_KEY set: ${{ secrets.DEPLOY_SSH_KEY != '' }}"
           echo "DEPLOY_PATH set: ${{ secrets.DEPLOY_PATH != '' }}"
           echo "GHCR_USER set: ${{ secrets.GHCR_USER != '' }}"
           echo "GHCR_TOKEN set: ${{ secrets.GHCR_TOKEN != '' }}"
 
       - name: Deploy over SSH
-        uses: appleboy/ssh-action@v1
+        uses: appleboy/ssh-action@v1.2.0
         env:
-          CORE_IMAGE: ${{ vars.CORE_IMAGE }}
-          AUTH_IMAGE: ${{ vars.AUTH_IMAGE }}
           FRONTEND_IMAGE: ${{ vars.FRONTEND_IMAGE }}
           GHCR_USER: ${{ secrets.GHCR_USER }}
           GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
           DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
         with:
           host: ${{ secrets.DEPLOY_HOST }}
-          username: "root"
+          username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
-          debug: true
+          envs: FRONTEND_IMAGE,GHCR_USER,GHCR_TOKEN,DEPLOY_PATH
           script: |
-            whoami
-            hostname
+            set -e
+            cd "$DEPLOY_PATH"
+            echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.images.yml pull
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.images.yml up -d --no-build
