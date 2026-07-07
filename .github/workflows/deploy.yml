@@ -30,6 +30,9 @@ jobs:
           echo "DEPLOY_PATH set: ${{ secrets.DEPLOY_PATH != '' }}"
           echo "GHCR_USER set: ${{ secrets.GHCR_USER != '' }}"
           echo "GHCR_TOKEN set: ${{ secrets.GHCR_TOKEN != '' }}"
+          echo "POSTGRES_DB set: ${{ secrets.POSTGRES_DB != '' }}"
+          echo "POSTGRES_USER set: ${{ secrets.POSTGRES_USER != '' }}"
+          echo "POSTGRES_PASSWORD set: ${{ secrets.POSTGRES_PASSWORD != '' }}"
 
       - name: Check local deployment files
         run: |
@@ -101,7 +104,12 @@ jobs:
       - name: Deploy over SSH
         uses: appleboy/ssh-action@v1.2.0
         env:
+          CORE_IMAGE: ${{ vars.CORE_IMAGE }}
+          AUTH_IMAGE: ${{ vars.AUTH_IMAGE }}
           FRONTEND_IMAGE: ${{ vars.FRONTEND_IMAGE }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
           GHCR_USER: ${{ secrets.GHCR_USER }}
           GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
           DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
@@ -111,7 +119,7 @@ jobs:
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
 
-          envs: FRONTEND_IMAGE,GHCR_USER,GHCR_TOKEN,DEPLOY_PATH
+          envs: CORE_IMAGE,AUTH_IMAGE,FRONTEND_IMAGE,POSTGRES_DB,POSTGRES_USER,POSTGRES_PASSWORD,GHCR_USER,GHCR_TOKEN,DEPLOY_PATH
 
           script: |
             set -e
