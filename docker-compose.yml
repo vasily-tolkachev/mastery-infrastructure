@@ -1,4 +1,17 @@
 services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: mastery-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: mastery
+      POSTGRES_USER: mastery
+      POSTGRES_PASSWORD: mastery
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - mastery-net
+
   frontend:
     image: ${FRONTEND_IMAGE:-ghcr.io/mastery/mastery-frontend:latest}
     pull_policy: always
