@@ -30,7 +30,10 @@ jobs:
           echo "DEPLOY_PATH set: ${{ secrets.DEPLOY_PATH != '' }}"
           echo "GHCR_USER set: ${{ secrets.GHCR_USER != '' }}"
           echo "GHCR_TOKEN set: ${{ secrets.GHCR_TOKEN != '' }}"
-
+      - name: List files
+        run: |
+          ls -la
+          find . -name "docker-compose*"
       - name: Prepare server directory
         uses: appleboy/ssh-action@v1.2.0
         with:
