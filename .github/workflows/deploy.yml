@@ -30,10 +30,18 @@ jobs:
           echo "DEPLOY_PATH set: ${{ secrets.DEPLOY_PATH != '' }}"
           echo "GHCR_USER set: ${{ secrets.GHCR_USER != '' }}"
           echo "GHCR_TOKEN set: ${{ secrets.GHCR_TOKEN != '' }}"
-      - name: List files
+
+      - name: Check local deployment files
         run: |
           ls -la
+          echo
+          echo "Compose files:"
           find . -name "docker-compose*"
+
+          echo
+          echo "Nginx files:"
+          ls -la nginx || true
+
       - name: Prepare server directory
         uses: appleboy/ssh-action@v1.2.0
         with:
@@ -42,11 +50,16 @@ jobs:
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           script: |
             set -e
+
             mkdir -p "${{ secrets.DEPLOY_PATH }}"
 
-      - name: Upload compose files
+            # remove old nginx directory to avoid stale files/directories
+            rm -rf "${{ secrets.DEPLOY_PATH }}/nginx"
+
+      - name: Upload deployment files
         run: |
           mkdir -p ~/.ssh
+
           echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
 
@@ -54,15 +67,29 @@ jobs:
             docker-compose.yml \
             docker-compose.prod.yml \
             docker-compose.images.yml \
+            -r nginx \
             ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:${{ secrets.DEPLOY_PATH }}/
-      - name: Verify compose files on server
+
+      - name: Verify server files
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           script: |
-            ls -la ${{ secrets.DEPLOY_PATH }}
+            set -e
+
+            echo "=== Deployment directory ==="
+            ls -la "${{ secrets.DEPLOY_PATH }}"
+
+            echo
+            echo "=== nginx directory ==="
+            ls -la "${{ secrets.DEPLOY_PATH }}/nginx"
+
+            test -f "${{ secrets.DEPLOY_PATH }}/nginx/nginx.prod.conf"
+
+            echo "nginx.prod.conf is a file ✅"
+
       - name: Deploy over SSH
         uses: appleboy/ssh-action@v1.2.0
         env:
@@ -70,17 +97,22 @@ jobs:
           GHCR_USER: ${{ secrets.GHCR_USER }}
           GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
           DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+
         with:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
+
           envs: FRONTEND_IMAGE,GHCR_USER,GHCR_TOKEN,DEPLOY_PATH
+
           script: |
             set -e
 
             cd "$DEPLOY_PATH"
 
-            echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
+            echo "$GHCR_TOKEN" | docker login ghcr.io \
+              -u "$GHCR_USER" \
+              --password-stdin
 
             docker compose \
               -f docker-compose.yml \
