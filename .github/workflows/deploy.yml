@@ -26,11 +26,32 @@ jobs:
           echo "=== Secrets ==="
           echo "DEPLOY_HOST set: ${{ secrets.DEPLOY_HOST != '' }}"
           echo "DEPLOY_USER set: ${{ secrets.DEPLOY_USER != '' }}"
-          echo "DEPLOY_USER set: ${{ secrets.DEPLOY_USER != '' }}"
           echo "DEPLOY_SSH_KEY set: ${{ secrets.DEPLOY_SSH_KEY != '' }}"
           echo "DEPLOY_PATH set: ${{ secrets.DEPLOY_PATH != '' }}"
           echo "GHCR_USER set: ${{ secrets.GHCR_USER != '' }}"
           echo "GHCR_TOKEN set: ${{ secrets.GHCR_TOKEN != '' }}"
+
+      - name: Prepare server directory
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          script: |
+            set -e
+            mkdir -p "${{ secrets.DEPLOY_PATH }}"
+
+      - name: Upload compose files
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          source: |
+            docker-compose.yml
+            docker-compose.prod.yml
+            docker-compose.images.yml
+          target: ${{ secrets.DEPLOY_PATH }}
 
       - name: Deploy over SSH
         uses: appleboy/ssh-action@v1.2.0
