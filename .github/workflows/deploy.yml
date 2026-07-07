@@ -45,15 +45,24 @@ jobs:
             mkdir -p "${{ secrets.DEPLOY_PATH }}"
 
       - name: Upload compose files
-        uses: appleboy/scp-action@v0.1.7
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+          scp -o StrictHostKeyChecking=no \
+            docker-compose.yml \
+            docker-compose.prod.yml \
+            docker-compose.images.yml \
+            ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:${{ secrets.DEPLOY_PATH }}/
+      - name: Verify compose files on server
+        uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
-          source: "docker-compose*.yml"
-          target: ${{ secrets.DEPLOY_PATH }}
-          debug: true
-
+          script: |
+            ls -la ${{ secrets.DEPLOY_PATH }}
       - name: Deploy over SSH
         uses: appleboy/ssh-action@v1.2.0
         env:
