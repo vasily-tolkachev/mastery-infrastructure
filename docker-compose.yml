@@ -1,9 +1,30 @@
 services:
-
   frontend:
     image: ${FRONTEND_IMAGE:-ghcr.io/mastery/mastery-frontend:latest}
     pull_policy: always
     container_name: mastery-frontend
     restart: unless-stopped
+    environment:
+      PUBLIC_API_BASE_URL: ${PUBLIC_API_BASE_URL:-/api}
+      PUBLIC_AUTH_BASE_URL: ${PUBLIC_AUTH_BASE_URL:-/api/auth}
+    networks:
+      - mastery-net
 
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: mastery-nginx
+    restart: unless-stopped
+    depends_on:
+      - frontend
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.local.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - mastery-net
 
+volumes:
+  postgres_data:
+
+networks:
+  mastery-net:
