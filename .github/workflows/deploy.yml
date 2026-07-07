@@ -33,7 +33,7 @@ jobs:
           echo "GHCR_TOKEN set: ${{ secrets.GHCR_TOKEN != '' }}"
 
       - name: Deploy over SSH
-        uses: appleboy/ssh-action@v1.2.0
+        uses: appleboy/ssh-action@v1
         env:
           CORE_IMAGE: ${{ vars.CORE_IMAGE }}
           AUTH_IMAGE: ${{ vars.AUTH_IMAGE }}
