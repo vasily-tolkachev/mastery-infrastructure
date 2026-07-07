@@ -53,8 +53,15 @@ jobs:
 
             mkdir -p "${{ secrets.DEPLOY_PATH }}"
 
-            # remove old nginx directory to avoid stale files/directories
+            echo "Before cleanup:"
+            ls -la "${{ secrets.DEPLOY_PATH }}" || true
+
             rm -rf "${{ secrets.DEPLOY_PATH }}/nginx"
+
+            mkdir -p "${{ secrets.DEPLOY_PATH }}/nginx"
+
+            echo "After cleanup:"
+            ls -la "${{ secrets.DEPLOY_PATH }}"
 
       - name: Upload deployment files
         run: |
