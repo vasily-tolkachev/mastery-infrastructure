@@ -64,10 +64,11 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
 
           scp -o StrictHostKeyChecking=no \
+            -r \
             docker-compose.yml \
             docker-compose.prod.yml \
             docker-compose.images.yml \
-            -r nginx \
+            nginx \
             ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:${{ secrets.DEPLOY_PATH }}/
 
       - name: Verify server files
