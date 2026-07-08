@@ -2,6 +2,12 @@ name: Deploy
 
 on:
   workflow_dispatch:
+    inputs:
+      reset_postgres_data:
+        description: "Reset Postgres volume before deploy (data loss)"
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -113,13 +119,14 @@ jobs:
           GHCR_USER: ${{ secrets.GHCR_USER }}
           GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
           DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+          RESET_POSTGRES_DATA: ${{ inputs.reset_postgres_data }}
 
         with:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
 
-          envs: CORE_IMAGE,AUTH_IMAGE,FRONTEND_IMAGE,POSTGRES_DB,POSTGRES_USER,POSTGRES_PASSWORD,GHCR_USER,GHCR_TOKEN,DEPLOY_PATH
+          envs: CORE_IMAGE,AUTH_IMAGE,FRONTEND_IMAGE,POSTGRES_DB,POSTGRES_USER,POSTGRES_PASSWORD,GHCR_USER,GHCR_TOKEN,DEPLOY_PATH,RESET_POSTGRES_DATA
 
           script: |
             set -e
@@ -135,6 +142,14 @@ jobs:
               -f docker-compose.prod.yml \
               -f docker-compose.images.yml \
               pull
+
+            if [ "$RESET_POSTGRES_DATA" = "true" ]; then
+              docker compose \
+                -f docker-compose.yml \
+                -f docker-compose.prod.yml \
+                -f docker-compose.images.yml \
+                down -v --remove-orphans
+            fi
 
             docker compose \
               -f docker-compose.yml \
