@@ -39,6 +39,10 @@ jobs:
           echo "POSTGRES_DB set: ${{ secrets.POSTGRES_DB != '' }}"
           echo "POSTGRES_USER set: ${{ secrets.POSTGRES_USER != '' }}"
           echo "POSTGRES_PASSWORD set: ${{ secrets.POSTGRES_PASSWORD != '' }}"
+          echo "AUTH_JWT_KEY_ID set: ${{ secrets.AUTH_JWT_KEY_ID != '' }}"
+          echo "AUTH_PROVIDERS_GOOGLE_CLIENT_ID set: ${{ secrets.AUTH_PROVIDERS_GOOGLE_CLIENT_ID != '' }}"
+          echo "AUTH_JWKS_URI set: ${{ secrets.AUTH_JWKS_URI != '' }}"
+          echo "OPENAI_API_KEY set: ${{ secrets.OPENAI_API_KEY != '' }}"
 
       - name: Check local deployment files
         run: |
@@ -116,6 +120,10 @@ jobs:
           POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
           POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          AUTH_JWT_KEY_ID: ${{ secrets.AUTH_JWT_KEY_ID }}
+          AUTH_PROVIDERS_GOOGLE_CLIENT_ID: ${{ secrets.AUTH_PROVIDERS_GOOGLE_CLIENT_ID }}
+          AUTH_JWKS_URI: ${{ secrets.AUTH_JWKS_URI }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           GHCR_USER: ${{ secrets.GHCR_USER }}
           GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
           DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
@@ -126,7 +134,7 @@ jobs:
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
 
-          envs: CORE_IMAGE,AUTH_IMAGE,FRONTEND_IMAGE,POSTGRES_DB,POSTGRES_USER,POSTGRES_PASSWORD,GHCR_USER,GHCR_TOKEN,DEPLOY_PATH,RESET_POSTGRES_DATA
+          envs: CORE_IMAGE,AUTH_IMAGE,FRONTEND_IMAGE,POSTGRES_DB,POSTGRES_USER,POSTGRES_PASSWORD,AUTH_JWT_KEY_ID,AUTH_PROVIDERS_GOOGLE_CLIENT_ID,AUTH_JWKS_URI,OPENAI_API_KEY,GHCR_USER,GHCR_TOKEN,DEPLOY_PATH,RESET_POSTGRES_DATA
 
           script: |
             set -e
