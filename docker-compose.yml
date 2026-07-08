@@ -21,6 +21,48 @@ services:
     networks:
       - mastery-net
 
+  auth:
+    image: ${AUTH_IMAGE:-ghcr.io/mastery/mastery-auth:latest}
+    pull_policy: always
+    container_name: mastery-auth
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SERVER_PORT: 8081
+      DB_URL: ${POSTGRES_DB:-mastery}
+      DB_USERNAME: ${POSTGRES_USER:-mastery}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-mastery}
+      AUTH_JWT_KEY_ID: ${AUTH_JWT_KEY_ID}
+      AUTH_JWT_ACCESS_TOKEN_TTL_SECONDS: 3600
+      AUTH_PROVIDERS_GOOGLE_ENABLED: "true"
+      AUTH_PROVIDERS_GOOGLE_CLIENT_ID: ${AUTH_PROVIDERS_GOOGLE_CLIENT_ID}
+    networks:
+      - mastery-net
+
+  core:
+    image: ${CORE_IMAGE:-ghcr.io/mastery/mastery-core:latest}
+    pull_policy: always
+    container_name: mastery-core
+    restart: unless-stopped
+    depends_on:
+      - postgres
+      - auth
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SERVER_PORT: 8080
+      DB_URL: ${POSTGRES_DB:-mastery}
+      DB_USERNAME: ${POSTGRES_USER:-mastery}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-mastery}
+      AUTH_JWKS_URI: ${AUTH_JWKS_URI}
+      AUTH_JWT_KEY_ID: ${AUTH_JWT_KEY_ID}
+      TELEGRAM_ENABLED: "false"
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-5-mini}
+    networks:
+      - mastery-net
+
   frontend:
     image: ${FRONTEND_IMAGE:-ghcr.io/mastery/mastery-frontend:latest}
     pull_policy: always
@@ -38,6 +80,8 @@ services:
     restart: unless-stopped
     depends_on:
       - frontend
+      - core
+      - auth
     ports:
       - "80:80"
     volumes:
