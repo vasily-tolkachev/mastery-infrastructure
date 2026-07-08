@@ -4,14 +4,10 @@ services:
     container_name: mastery-postgres
     restart: unless-stopped
 
-    ports:
-      - "5432:5432"
-
     environment:
       POSTGRES_DB: mastery
       POSTGRES_USER: mastery
       POSTGRES_PASSWORD: mastery
-      TZ: UTC
 
     volumes:
       - postgres_data:/var/lib/postgresql/data
