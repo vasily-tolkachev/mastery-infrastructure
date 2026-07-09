@@ -86,7 +86,6 @@ jobs:
           scp -o StrictHostKeyChecking=no \
             -r \
             docker-compose.yml \
-            docker-compose.prod.yml \
             docker-compose.images.yml \
             nginx \
             ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:${{ secrets.DEPLOY_PATH }}/
@@ -107,9 +106,9 @@ jobs:
             echo "=== nginx directory ==="
             ls -la "${{ secrets.DEPLOY_PATH }}/nginx"
 
-            test -f "${{ secrets.DEPLOY_PATH }}/nginx/nginx.prod.conf"
+            test -f "${{ secrets.DEPLOY_PATH }}/nginx/nginx.local.conf"
 
-            echo "nginx.prod.conf is a file ✅"
+            echo "nginx.local.conf is a file ✅"
 
       - name: Deploy over SSH
         uses: appleboy/ssh-action@v1.2.0
@@ -147,20 +146,17 @@ jobs:
 
             docker compose \
               -f docker-compose.yml \
-              -f docker-compose.prod.yml \
               -f docker-compose.images.yml \
               pull
 
             if [ "$RESET_POSTGRES_DATA" = "true" ]; then
               docker compose \
                 -f docker-compose.yml \
-                -f docker-compose.prod.yml \
                 -f docker-compose.images.yml \
                 down -v --remove-orphans
             fi
 
             docker compose \
               -f docker-compose.yml \
-              -f docker-compose.prod.yml \
               -f docker-compose.images.yml \
               up -d --no-build
