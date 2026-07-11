@@ -9,7 +9,7 @@ on:
         default: false
         type: boolean
   repository_dispatch:
-    types: [backend-image-published, frontend-image-published]
+    types: [backend-image-published, frontend-image-published, core-auth-images-published]
 
 permissions:
   contents: read
