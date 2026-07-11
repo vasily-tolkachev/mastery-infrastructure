@@ -26,6 +26,7 @@ jobs:
           echo "=== Variables ==="
           echo "CORE_IMAGE:      '${{ vars.CORE_IMAGE }}'"
           echo "AUTH_IMAGE:      '${{ vars.AUTH_IMAGE }}'"
+          echo "QUEST_IMAGE:     '${{ vars.QUEST_IMAGE }}'"
           echo "FRONTEND_IMAGE:  '${{ vars.FRONTEND_IMAGE }}'"
 
           echo
@@ -115,6 +116,7 @@ jobs:
         env:
           CORE_IMAGE: ${{ vars.CORE_IMAGE }}
           AUTH_IMAGE: ${{ vars.AUTH_IMAGE }}
+          QUEST_IMAGE: ${{ vars.QUEST_IMAGE }}
           FRONTEND_IMAGE: ${{ vars.FRONTEND_IMAGE }}
           POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
           POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
@@ -133,7 +135,7 @@ jobs:
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
 
-          envs: CORE_IMAGE,AUTH_IMAGE,FRONTEND_IMAGE,POSTGRES_DB,POSTGRES_USER,POSTGRES_PASSWORD,AUTH_JWT_KEY_ID,AUTH_PROVIDERS_GOOGLE_CLIENT_ID,AUTH_JWKS_URI,OPENAI_API_KEY,GHCR_USER,GHCR_TOKEN,DEPLOY_PATH,RESET_POSTGRES_DATA
+          envs: CORE_IMAGE,AUTH_IMAGE,QUEST_IMAGE,FRONTEND_IMAGE,POSTGRES_DB,POSTGRES_USER,POSTGRES_PASSWORD,AUTH_JWT_KEY_ID,AUTH_PROVIDERS_GOOGLE_CLIENT_ID,AUTH_JWKS_URI,OPENAI_API_KEY,GHCR_USER,GHCR_TOKEN,DEPLOY_PATH,RESET_POSTGRES_DATA
 
           script: |
             set -e

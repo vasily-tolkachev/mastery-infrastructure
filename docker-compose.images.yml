@@ -8,7 +8,7 @@ services:
     pull_policy: always
 
   quest:
-    image: ${QUEST_IMAGE}
+    image: ${QUEST_IMAGE:-ghcr.io/mastery/mastery-quest:latest}
     pull_policy: always
 
   frontend:
