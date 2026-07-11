@@ -162,3 +162,8 @@ jobs:
               -f docker-compose.yml \
               -f docker-compose.images.yml \
               up -d --no-build
+
+            docker compose \
+              -f docker-compose.yml \
+              -f docker-compose.images.yml \
+              restart nginx
