@@ -8,6 +8,8 @@ on:
         required: false
         default: false
         type: boolean
+  repository_dispatch:
+    types: [backend-image-published, frontend-image-published]
 
 permissions:
   contents: read
@@ -23,6 +25,11 @@ jobs:
 
       - name: Debug secrets and variables
         run: |
+          echo "=== Trigger ==="
+          echo "Event: '${{ github.event_name }}'"
+          echo "Dispatch type: '${{ github.event.action || '' }}'"
+          echo "Payload: '${{ toJson(github.event.client_payload) }}'"
+          echo
           echo "=== Variables ==="
           echo "CORE_IMAGE:      '${{ vars.CORE_IMAGE }}'"
           echo "AUTH_IMAGE:      '${{ vars.AUTH_IMAGE }}'"
