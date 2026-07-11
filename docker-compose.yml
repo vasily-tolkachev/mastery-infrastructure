@@ -65,6 +65,17 @@ services:
     networks:
       - mastery-net
 
+  quest:
+    image: ${QUEST_IMAGE:-ghcr.io/mastery/mastery-quest:latest}
+    pull_policy: always
+    container_name: mastery-quest
+    restart: unless-stopped
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SERVER_PORT: 8082
+    networks:
+      - mastery-net
+
   frontend:
     image: ${FRONTEND_IMAGE:-ghcr.io/mastery/mastery-frontend:latest}
     pull_policy: always
@@ -87,6 +98,7 @@ services:
       - frontend
       - core
       - auth
+      - quest
     ports:
       - "80:80"
     volumes:

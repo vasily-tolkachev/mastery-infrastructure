@@ -7,6 +7,10 @@ services:
     image: ${CORE_IMAGE}
     pull_policy: always
 
+  quest:
+    image: ${QUEST_IMAGE}
+    pull_policy: always
+
   frontend:
     image: ${FRONTEND_IMAGE}
     pull_policy: always
