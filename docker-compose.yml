@@ -70,9 +70,16 @@ services:
     pull_policy: always
     container_name: mastery-quest
     restart: unless-stopped
+    depends_on:
+      - postgres
+      - auth
     environment:
       SPRING_PROFILES_ACTIVE: prod
       SERVER_PORT: 8082
+      DB_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-mastery}
+      DB_USERNAME: ${POSTGRES_USER:-mastery}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-mastery}
+      QUEST_DB_SCHEMA: ${QUEST_DB_SCHEMA:-quest}
       AUTH_JWKS_URI: ${AUTH_JWKS_URI}
     networks:
       - mastery-net
@@ -112,3 +119,4 @@ volumes:
 
 networks:
   mastery-net:
+
