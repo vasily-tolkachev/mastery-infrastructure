@@ -113,8 +113,10 @@ services:
       - quest
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - ./nginx/nginx.local.conf:/etc/nginx/nginx.conf:ro
+      - ./certs:/etc/nginx/certs:ro
     networks:
       - mastery-net
 
