@@ -121,8 +121,7 @@ services:
       - mastery-net
 
 volumes:
-  postgres_data:k
+  postgres_data:
 
 networks:
   mastery-net:
-
